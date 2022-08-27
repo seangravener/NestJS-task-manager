@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { Task } from './tasks/task.entity';
 import { TasksModule } from './tasks/tasks.module';
 
 @Module({
@@ -15,6 +16,10 @@ import { TasksModule } from './tasks/tasks.module';
       password: 'postgres',
       database: 'task-management',
       autoLoadEntities: true,
+      entities: [Task],
+
+      // Development only
+      synchronize: true,
     }),
   ],
   controllers: [AppController],

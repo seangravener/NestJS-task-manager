@@ -3,6 +3,7 @@ import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
+import { Repository } from 'typeorm';
 
 const initTasks = [
   {
@@ -22,6 +23,8 @@ const initTasks = [
 @Injectable()
 export class TasksService {
   private tasks: Task[] = [...initTasks];
+
+  constructor(private tasksRepository: Repository<Task>) {}
 
   getAllTasks(): Task[] {
     return this.tasks;
