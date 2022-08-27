@@ -15,7 +15,7 @@ const initTasks = [
     id: '2',
     title: 'Second task.',
     description: 'Hard coded.',
-    status: 'OPEN',
+    status: 'IN_PROGRESS',
   },
 ] as Task[];
 
@@ -36,10 +36,7 @@ export class TasksService {
 
     if (search) {
       tasks = tasks.filter((task) => {
-        if (
-          task.title.includes('search') ||
-          task.description.includes(search)
-        ) {
+        if (task.title.includes(search) || task.description.includes(search)) {
           return true;
         }
       });
