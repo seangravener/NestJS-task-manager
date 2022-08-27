@@ -6,6 +6,8 @@ import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
+import { UpdateTaskStatusDto } from './dtos/update-task-status.dto';
 
 const initTasks = [
   {
@@ -28,6 +30,10 @@ export class TasksService {
 
   constructor(public tasksRepository: TasksRepository) {}
 
+  // async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  //   return await this.tasksRepository.getAllTasks();
+  // }
+
   async getAllTasks() {
     return await this.tasksRepository.getAllTasks();
   }
@@ -36,50 +42,35 @@ export class TasksService {
     return await this.tasksRepository.getTaskById(id);
   }
 
-  // getTasksWithFilters({ status, search }: GetTasksFilterDto): Task[] {
-  //   let tasks = this.getAllTasks();
+  async getTasks({ status, search }: GetTasksFilterDto = {}): Promise<Task[]> {
+    let tasks = await this.tasksRepository.getAllTasks();
 
-  //   if (status) {
-  //     tasks = tasks.filter((task) => status === task.status);
-  //   }
+    if (status) {
+      tasks = tasks.filter((task) => status === task.status);
+    }
 
-  //   if (search) {
-  //     tasks = tasks.filter((task) => {
-  //       if (task.title.includes(search) || task.description.includes(search)) {
-  //         return true;
-  //       }
-  //     });
-  //   }
+    if (search) {
+      tasks = tasks.filter((task) => {
+        if (task.title.includes(search) || task.description.includes(search)) {
+          return true;
+        }
+      });
+    }
 
-  //   return tasks;
-  // }
-
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return await this.tasksRepository.createTask(createTaskDto);
+    return tasks;
   }
 
-  // createTask(createTaskDto: CreateTaskDto): Task {
-  //   const { title, description } = createTaskDto;
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksRepository.createTask(createTaskDto);
+  }
 
-  //   const task: Task = {
-  //     id: uuid(),
-  //     title,
-  //     description,
-  //     status: TaskStatus.OPEN,
-  //   };
+  async deleteTask(id: string) {
+    this.tasksRepository.deleteTask(id);
+  }
 
-  //   this.tasks.push(task);
-  //   return task;
-  // }
-
-  // deleteTask(id: string) {
-  //   const found = this.getTaskById(id);
-  //   this.tasks = this.tasks.filter((task) => task.id !== found.id);
-  // }
-
-  // updateTaskStatus(id: string, status: TaskStatus) {
-  //   const task = this.getTaskById(id);
-  //   task.status = status;
-  //   return task;
-  // }
+  async updateTaskStatus(id, dto: UpdateTaskStatusDto): Promise<boolean> {
+    return await this.tasksRepository
+      .updateTaskStatus(id, dto)
+      .then((value) => !!value.affected);
+  }
 }

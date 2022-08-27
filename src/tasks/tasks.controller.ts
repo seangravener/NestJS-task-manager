@@ -1,14 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
+import { UpdateTaskStatusDto } from './dtos/update-task-status.dto';
 import { Task } from './task.entity';
 
 import { TasksService } from './tasks.service';
@@ -30,46 +33,27 @@ export class TasksController {
 
   @Get()
   getTasks(@Query() filterDto: GetTasksFilterDto) {
-    return this.tasksService.getAllTasks();
+    const { search, status } = filterDto;
+
+    if (search || status) {
+      return this.tasksService.getTasks(filterDto);
+    }
+
+    return this.tasksService.getTasks();
   }
 
-  // @Get()
-  // getTasks(@Query() filterDto: GetTasksFilterDto) {
-  //   const { search, status } = filterDto;
+  @Delete('/:id')
+  deleteTask(@Param('id') id: string) {
+    this.tasksService.deleteTask(id);
+  }
 
-  //   if (search || status) {
-  //     return this.tasksService.getTasksWithFilters(filterDto);
-  //   } else {
-  //     return this.tasksService.getAllTasks();
-  //   }
-  // }
-
-  // @Delete('/:id')
-  // deleteTask(@Param('id') id: string) {
-  //   console.log(id, this.tasksService.getAllTasks());
-  //   return this.tasksService.deleteTask(id);
-  // }
-
-  // @Patch('/:id/status')
-  // updateTaskStatus(
-  //   @Param('id') id: string,
-  //   @Body() { status }: UpdateTaskStatusDto,
-  // ): Task {
-  //   return this.tasksService.updateTaskStatus(id, status);
-  // }
-
-  // @Post()
-  // async createTask(
-  //   @Body('title') title: string,
-  //   @Body('description') description: string,
-  // ): Promise<Task> {
-  //   return await this.tasksService.createTask(title, description);
-  // }
-
-  // Eg. Use of pipe in controller at the "handler level"
-  // @Post()
-  // @UsePipes(SomePipe)
-  // handlerMethod(@Body('description') description: string) {}
+  @Patch('/:id/status')
+  updateTaskStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskStatusDto,
+  ): Promise<boolean> {
+    return this.tasksService.updateTaskStatus(id, dto);
+  }
 
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
