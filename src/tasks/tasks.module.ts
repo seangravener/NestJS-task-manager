@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
 import { Task } from './task.entity';
 import { TasksController } from './tasks.controller';
+import { TasksRepository } from './tasks.repository';
 import { TasksService } from './tasks.service';
 
 @Module({
   controllers: [TasksController],
   imports: [TypeOrmModule.forFeature([Task])],
-  providers: [TasksService, Repository],
+  providers: [TasksService, TasksRepository],
 })
-export class TasksModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class TasksModule {}

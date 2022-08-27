@@ -5,8 +5,10 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
 import { Task } from './task.entity';
 
 import { TasksService } from './tasks.service';
@@ -24,6 +26,11 @@ export class TasksController {
     }
 
     return task;
+  }
+
+  @Get()
+  getTasks(@Query() filterDto: GetTasksFilterDto) {
+    return this.tasksService.getAllTasks();
   }
 
   // @Get()
