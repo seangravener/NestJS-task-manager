@@ -11,6 +11,7 @@ import {
 
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
+import { UpdateTaskStatusDto } from './dtos/update-task-status.dto';
 import { Task, TaskStatus } from './task.model';
 import { TasksService } from './tasks.service';
 
@@ -43,7 +44,7 @@ export class TasksController {
   @Patch('/:id/status')
   updateTaskStatus(
     @Param('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Body() { status }: UpdateTaskStatusDto,
   ): Task {
     return this.tasksService.updateTaskStatus(id, status);
   }
@@ -55,6 +56,11 @@ export class TasksController {
   // ): Promise<Task> {
   //   return await this.tasksService.createTask(title, description);
   // }
+
+  // Eg. Use of pipe in controller at the "handler level"
+  // @Post()
+  // @UsePipes(SomePipe)
+  // handlerMethod(@Body('description') description: string) {}
 
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
