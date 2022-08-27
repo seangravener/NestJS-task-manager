@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { TasksRepository } from './tasks.repository';
-import { TaskStatus } from './task-status.enum';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { TasksRepository } from './tasks.repository';
 import { Task } from './task.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+
+import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dtos/update-task-status.dto';
 
@@ -29,10 +27,6 @@ export class TasksService {
   private tasks: Task[] = [...initTasks];
 
   constructor(public tasksRepository: TasksRepository) {}
-
-  // async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-  //   return await this.tasksRepository.getAllTasks();
-  // }
 
   async getAllTasks() {
     return await this.tasksRepository.getAllTasks();
@@ -68,9 +62,13 @@ export class TasksService {
     this.tasksRepository.deleteTask(id);
   }
 
-  async updateTaskStatus(id, dto: UpdateTaskStatusDto): Promise<boolean> {
-    return await this.tasksRepository
+  async updateTaskStatus(id, dto: UpdateTaskStatusDto): Promise<void> {
+    const results = await this.tasksRepository
       .updateTaskStatus(id, dto)
-      .then((value) => !!value.affected);
+      .then((value) => value.affected > 0);
+
+    if (!results) {
+      throw new NotFoundException(`Task with id ${id} not found`);
+    }
   }
 }

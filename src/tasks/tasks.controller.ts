@@ -51,7 +51,7 @@ export class TasksController {
   updateTaskStatus(
     @Param('id') id: string,
     @Body() dto: UpdateTaskStatusDto,
-  ): Promise<boolean> {
+  ): Promise<void> {
     return this.tasksService.updateTaskStatus(id, dto);
   }
 
