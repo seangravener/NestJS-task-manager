@@ -11,7 +11,7 @@ import { Task } from './task.entity';
 export class TasksRepository {
   constructor(
     @InjectRepository(Task)
-    public dataSource: Repository<Task>,
+    private dataSource: Repository<Task>,
   ) {}
 
   async getTasks({ status, search }: GetTasksFilterDto): Promise<Task[]> {
