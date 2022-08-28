@@ -3,9 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 import { User } from './user.entity';
 import AuthCredentialsDto from './dto/auth-credentials.dto';
@@ -26,12 +27,15 @@ export class UsersRepository {
     try {
       await this.dataSource.save(user);
     } catch (error) {
-      // dup username
       if (error.code === '23505') {
         throw new ConflictException('Username already exists.');
       } else {
         throw new InternalServerErrorException();
       }
     }
+  }
+
+  async findUser(username: AuthCredentialsDto['username']): Promise<User> {
+    return this.dataSource.findOne({ where: { username } });
   }
 }
